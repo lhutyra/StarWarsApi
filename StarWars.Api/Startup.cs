@@ -56,6 +56,11 @@ namespace StarWars
             });
 
             app.UseSwagger();
+            app.UseSwaggerUI(setup =>
+            {
+                setup.SwaggerEndpoint("/swagger/StarWarsApiDocumentation/swagger.json","endpoint");
+                setup.RoutePrefix = string.Empty;
+            });
         }
     }
 }
