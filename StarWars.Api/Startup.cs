@@ -11,6 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using StarWars.Data;
+using StarWars.Data.Repositories;
+using StarWars.Domain.Repositories;
 
 namespace StarWars
 {
@@ -34,6 +37,8 @@ namespace StarWars
                     Title = "Star Wars Api"
                 });
             });
+            services.AddDbContext<StarWarsContext>();
+            services.AddScoped<IEpisodeRepository, EpisodeRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

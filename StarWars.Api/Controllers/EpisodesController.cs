@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using StarWars.Domain.Repositories;
 
 
 namespace StarWars.Api.Controllers
@@ -16,25 +16,25 @@ namespace StarWars.Api.Controllers
     [Route("[controller]")]
     public class EpisodesController : ControllerBase
     {
+        private readonly IEpisodeRepository _episodeRepository;
+
+        public EpisodesController(IEpisodeRepository episodeRepository)
+        {
+            _episodeRepository = episodeRepository;
+        }
 
         [HttpGet]
-        public IEnumerable<Episode> Get()
+        public async Task<IEnumerable<Episode>> Get()
         {
-            using (StarWarsContext db = new StarWarsContext())
-            {
-                return db.Episodes;
-            }
+            return await _episodeRepository.GetEpisodeAsync();
         }
+
         [HttpGet("{episodeId}")]
         public async Task<ActionResult<Episode>> GetEpisode(
 
-          int episodeId)
+            int episodeId)
         {
-            using (StarWarsContext db = new StarWarsContext())
-            {
-                var result = await db.Episodes.FirstOrDefaultAsync(f => f.Id == episodeId);
-                return Ok(result);
-            }
+            return await _episodeRepository.GetEpisodeAsync(episodeId);
         }
 
         [HttpPost()]
@@ -47,10 +47,11 @@ namespace StarWars.Api.Controllers
                 db.Episodes.Add(newEntity);
                 await db.SaveChangesAsync();
                 return CreatedAtRoute(
-               "GetEpisode",
-               new { episode = newEntity.Id },
-             episode);
+                    "GetEpisode",
+                    new {episodeId = newEntity.Id},
+                    episode);
             }
         }
     }
 }
+
