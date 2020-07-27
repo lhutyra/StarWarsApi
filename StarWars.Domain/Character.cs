@@ -6,6 +6,10 @@ namespace StarWars.Domain
 {
     public class Character
     {
+        public Character()
+        {
+            CharacterEpisodes = new List<CharacterEpisode>();
+        }
         public int Id { get; set; }
         public string Name { get; set; }
         public List<CharacterEpisode> CharacterEpisodes { get; set; }

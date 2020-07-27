@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using StarWars.Domain;
@@ -33,14 +34,25 @@ namespace StarWars.Data.Repositories
                 .FirstOrDefaultAsync(a => a.Id == episodeId);
         }
 
+        public async Task<Episode> GetEpisodeByNameAsync(string episodeName)
+        {
+            return await _context.Episodes.FirstOrDefaultAsync(f => f.EpisodeName == episodeName);
+        }
+
         public void UpdateEpisode(Episode episode)
         {
-            
+
         }
 
         public void CreateEpisode(Episode episode)
         {
             _context.Episodes.Add(episode);
+        }
+
+        public void DeleteEpisode(int episodeId)
+        {
+            var episodeToRemove = _context.Episodes.Where(f => f.Id == episodeId).FirstOrDefault();
+            _context.Episodes.Remove(episodeToRemove);
         }
 
         public async Task<bool> SaveChangesAsync()

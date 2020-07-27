@@ -50,7 +50,7 @@ namespace StarWars.Api.Controllers
                 await _episodeRepository.SaveChangesAsync();
                 return CreatedAtRoute(
                     "GetEpisode",
-                    new { episodeId = 1 },
+                    new { episodeId = entityEpisode.Id },
                     entityEpisode);
             }
             catch (Exception ex)

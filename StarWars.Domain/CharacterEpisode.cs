@@ -8,5 +8,7 @@ namespace StarWars.Domain
     {
         public int EpisodeId { get; set; }
         public int CharacterId { get; set; }
+        public Character Character { get; set; }
+        public Episode Episode { get; set; }
     }
 }

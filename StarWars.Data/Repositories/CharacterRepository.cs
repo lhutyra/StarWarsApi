@@ -30,13 +30,18 @@ namespace StarWars.Data.Repositories
         public async Task<Character> GetCharacterAsync(int characterId)
         {
 
-            return await _context.Characters
+            return await _context.Characters.Include(f => f.CharacterEpisodes).ThenInclude(t => t.Episode)
                 .FirstOrDefaultAsync(a => a.Id == characterId);
         }
 
-        public void UpdateCharacter(Character Character)
+        public void UpdateCharacter(Character character)
         {
 
+        }
+
+        public void CreateCharacter(Character character)
+        {
+            _context.Characters.Add(character);
         }
 
         public async Task<bool> SaveChangesAsync()

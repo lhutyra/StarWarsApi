@@ -12,9 +12,11 @@ namespace StarWars.Domain.Repositories
         Task<IEnumerable<Episode>> GetEpisodeAsync();
 
         Task<Episode> GetEpisodeAsync(int episodeId);
+        Task<Episode> GetEpisodeByNameAsync(string episodeName);
 
         void UpdateEpisode(Episode episode);
         void CreateEpisode(Episode episode);
+        void DeleteEpisode(int episodeId);
 
         Task<bool> SaveChangesAsync();
     }
