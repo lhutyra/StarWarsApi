@@ -67,8 +67,16 @@ namespace StarWars.Api.Controllers
                 NotFound();
             }
             var friend = await _characterRepository.GetCharacterAsync(characterId);
-            var mappedResult = _mapper.Map<List<CharacterResult>>(character.Friends);
-            return Ok(mappedResult);
+            if (friend == null)
+            {
+                return NotFound();
+            }
+            _characterRepository.AddFriendToCharacter(character, friend);
+            await _characterRepository.SaveChangesAsync();
+            return CreatedAtAction(
+                "GetCharacter",
+                new { characterId = characterId },
+                _mapper.Map<CharacterResult>(character));
         }
 
         [Microsoft.AspNetCore.Mvc.HttpGet("{characterId}/episodes")]
@@ -129,22 +137,19 @@ namespace StarWars.Api.Controllers
         [Microsoft.AspNetCore.Mvc.HttpPost()]
         public async Task<ActionResult<Character>> CreateCharacter(CharacterCreation character)
         {
-            using (StarWarsContext db = new StarWarsContext())
+
+            if (await _characterRepository.CharacterNameExistsAsync(character.Name))
             {
-
-                if (await _characterRepository.CharacterNameExistsAsync(character.CharacterName))
-                {
-                    return BadRequest();
-                }
-
-                var entityToCreate = _mapper.Map<Character>(character);
-                _characterRepository.CreateCharacter(entityToCreate);
-                await db.SaveChangesAsync();
-                return CreatedAtAction(
-              "GetCharacter",
-              new { characterId = entityToCreate.Id },
-              entityToCreate);
+                return BadRequest();
             }
+
+            var entityToCreate = _mapper.Map<Character>(character);
+            _characterRepository.CreateCharacter(entityToCreate);
+            await _characterRepository.SaveChangesAsync();
+            return CreatedAtAction(
+          "GetCharacter",
+          new { characterId = entityToCreate.Id },
+           _mapper.Map<CharacterResult>(entityToCreate));
         }
     }
 }

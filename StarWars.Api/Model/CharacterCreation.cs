@@ -10,6 +10,6 @@ namespace StarWars.Api.Model
     {
         [Required]
         [MinLength(3)]
-        public string CharacterName { get; set; }
+        public string Name { get; set; }
     }
 }

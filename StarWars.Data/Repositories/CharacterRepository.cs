@@ -68,7 +68,7 @@ namespace StarWars.Data.Repositories
 
         public void AddFriendToCharacter(Character character, Character friend)
         {
-            _context.Add(new CharacterFriend() { });
+            _context.Add(new CharacterFriend() { CharacterId = character.Id, CharacterFriendId = friend.Id });
         }
 
         public void CreateCharacter(Character character)

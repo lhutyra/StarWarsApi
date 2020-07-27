@@ -13,6 +13,7 @@ namespace StarWars.Api.Mapping
         public CharacterProfile()
         {
             CreateMap<Character, CharacterResult>();
+            CreateMap<CharacterCreation, Character>();
 
             CreateMap<Episode, EpisodeCreation>();
             CreateMap<Character, CharacterResult>()
