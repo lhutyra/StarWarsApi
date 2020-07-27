@@ -8,5 +8,6 @@ namespace StarWars.Domain
     {
         public int CharacterId { get; set; }
         public int CharacterFriendId { get; set; }
+        public Character Character { get; set; }
     }
 }

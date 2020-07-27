@@ -17,7 +17,9 @@ namespace StarWars.Api.Mapping
             CreateMap<Episode, EpisodeCreation>();
             CreateMap<Character, CharacterResult>()
                 .ForMember(dest => dest.Episodes, opt => opt.MapFrom(src =>
-                    src.CharacterEpisodes.Select(f => f.Episode.EpisodeName)));
+                    src.CharacterEpisodes.Select(f => f.Episode.EpisodeName)))
+                .ForMember(dest => dest.Friends, opt => opt.MapFrom(src =>
+                src.CharacterEpisodes.Select(f => f.Character.Name)));
         }
     }
 }

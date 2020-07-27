@@ -15,6 +15,7 @@ namespace StarWars.Api.Mapping
             CreateMap<EpisodeCreation, Episode>();
 
             CreateMap<Episode, EpisodeCreation>();
+            CreateMap<Episode, EpisodeResult>();
         }
     }
 }

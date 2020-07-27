@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -19,19 +20,36 @@ namespace StarWars.Data.Repositories
 
         public async Task<bool> CharacterExistsAsync(int characterId)
         {
+            if (characterId <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(characterId));
+            }
             return await _context.Characters.AnyAsync(a => a.Id == characterId);
         }
 
         public async Task<IEnumerable<Character>> GetCharacterAsync()
         {
-            return await _context.Characters.ToListAsync();
+            return await _context.Characters.Include(c => c.CharacterEpisodes).ThenInclude(z => z.Episode).Include(z => z.Friends).ThenInclude(z => z.Character).ToListAsync();
         }
 
         public async Task<Character> GetCharacterAsync(int characterId)
         {
-
+            if (characterId <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(characterId));
+            }
             return await _context.Characters.Include(f => f.CharacterEpisodes).ThenInclude(t => t.Episode)
                 .FirstOrDefaultAsync(a => a.Id == characterId);
+        }
+
+        public Character GetCharacter(int characterId)
+        {
+            if (characterId <= 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(characterId));
+            }
+            return _context.Characters.Include(f => f.CharacterEpisodes).ThenInclude(t => t.Episode)
+                .FirstOrDefault(a => a.Id == characterId);
         }
 
         public void UpdateCharacter(Character character)

@@ -10,6 +10,7 @@ namespace StarWars.Domain.Repositories
         Task<bool> CharacterExistsAsync(int characterId);
         Task<IEnumerable<Character>> GetCharacterAsync();
         Task<Character> GetCharacterAsync(int characterId);
+        Character GetCharacter(int characterId);
         void CreateCharacter(Character character);
         void UpdateCharacter(Character character);
         Task<bool> SaveChangesAsync();

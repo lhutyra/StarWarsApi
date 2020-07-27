@@ -7,11 +7,13 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Newtonsoft.Json;
 using StarWars.Data;
 using StarWars.Data.Repositories;
 using StarWars.Domain.Repositories;
@@ -42,6 +44,13 @@ namespace StarWars
             services.AddDbContext<StarWarsContext>();
             services.AddScoped<IEpisodeRepository, EpisodeRepository>();
             services.AddScoped<ICharacterRepository, CharacterRepository>();
+            services.AddDbContext<StarWarsContext>(options =>
+                options.UseSqlServer(Configuration.GetConnectionString("StarWarsDatabase")));
+            services.AddMvc()
+                .AddNewtonsoftJson(options =>
+                {
+                    options.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

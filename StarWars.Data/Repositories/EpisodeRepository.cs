@@ -22,6 +22,11 @@ namespace StarWars.Data.Repositories
             return await _context.Episodes.AnyAsync(a => a.Id == episodeId);
         }
 
+        public async Task<bool> EpisodeNameExistsAsync(string episodeName)
+        {
+            return await _context.Episodes.AnyAsync(a => a.EpisodeName == episodeName);
+        }
+
         public async Task<IEnumerable<Episode>> GetEpisodeAsync()
         {
             return await _context.Episodes.ToListAsync();
@@ -36,7 +41,13 @@ namespace StarWars.Data.Repositories
 
         public async Task<Episode> GetEpisodeByNameAsync(string episodeName)
         {
-            return await _context.Episodes.FirstOrDefaultAsync(f => f.EpisodeName == episodeName);
+            var result = await _context.Episodes.FirstOrDefaultAsync(f => f.EpisodeName == episodeName);
+            return result;
+        }
+        public Episode GetEpisodeByName(string episodeName)
+        {
+            var result = _context.Episodes.FirstOrDefault(f => f.EpisodeName == episodeName);
+            return result;
         }
 
         public void UpdateEpisode(Episode episode)
@@ -49,9 +60,21 @@ namespace StarWars.Data.Repositories
             _context.Episodes.Add(episode);
         }
 
+        public void CreateEpisodeAndAssignCharacter(Character character, Episode episode)
+        {
+            
+            _context.CharacterEpisode.Add(new CharacterEpisode() {Character = character, Episode = episode});
+        }
+
         public void DeleteEpisode(int episodeId)
         {
-            var episodeToRemove = _context.Episodes.Where(f => f.Id == episodeId).FirstOrDefault();
+            var episodeToRemove = _context.Episodes.FirstOrDefault(f => f.Id == episodeId);
+            if (episodeToRemove == null)
+            {
+                throw new InvalidOperationException("Element not found");
+            }
+            var connectionToRemove = _context.CharacterEpisode.Where(f => f.EpisodeId == episodeId);
+            _context.RemoveRange(connectionToRemove);
             _context.Episodes.Remove(episodeToRemove);
         }
 

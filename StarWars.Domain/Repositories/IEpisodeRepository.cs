@@ -18,6 +18,10 @@ namespace StarWars.Domain.Repositories
         void CreateEpisode(Episode episode);
         void DeleteEpisode(int episodeId);
 
+
         Task<bool> SaveChangesAsync();
+        Episode GetEpisodeByName(string episodeName);
+        Task<bool> EpisodeNameExistsAsync(string episodeName);
+        void CreateEpisodeAndAssignCharacter(Character character, Episode episode);
     }
 }

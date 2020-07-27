@@ -32,6 +32,15 @@ namespace StarWars.Api.Controllers
             return await _episodeRepository.GetEpisodeAsync();
         }
 
+        [HttpDelete]
+        public async Task<IActionResult> Delete(int episodeId)
+        {
+            _episodeRepository.DeleteEpisode(episodeId);
+            await _episodeRepository.SaveChangesAsync();
+            return NoContent();
+
+        }
+
         [HttpGet("{episodeId}")]
         public async Task<ActionResult<Episode>> GetEpisode(
 
@@ -45,10 +54,18 @@ namespace StarWars.Api.Controllers
         {
             try
             {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(ModelState);
+                }
                 var entityEpisode = _mapper.Map<Episode>(episode);
+                if (await _episodeRepository.EpisodeNameExistsAsync(episode.EpisodeName))
+                {
+                    return BadRequest("Episode name exists already");
+                }
                 _episodeRepository.CreateEpisode(entityEpisode);
                 await _episodeRepository.SaveChangesAsync();
-                return CreatedAtRoute(
+                return CreatedAtAction(
                     "GetEpisode",
                     new { episodeId = entityEpisode.Id },
                     entityEpisode);
