@@ -52,6 +52,25 @@ namespace StarWars.Api.Controllers
             return Ok(mappedResult);
         }
 
+        /// <summary>
+        /// Assign friend id to selected characterId
+        /// </summary>
+        /// <param name="characterId"></param>
+        /// <returns>route to action</returns>
+        [Microsoft.AspNetCore.Mvc.HttpPost("{characterId}/friends/{friendId}")]
+
+        public async Task<ActionResult<List<CharacterResult>>> AddFriendToCharacter(int characterId)
+        {
+            var character = await _characterRepository.GetCharacterAsync(characterId);
+            if (character == null)
+            {
+                NotFound();
+            }
+            var friend = await _characterRepository.GetCharacterAsync(characterId);
+            var mappedResult = _mapper.Map<List<CharacterResult>>(character.Friends);
+            return Ok(mappedResult);
+        }
+
         [Microsoft.AspNetCore.Mvc.HttpGet("{characterId}/episodes")]
         public async Task<ActionResult<List<Episode>>> GetEpisodesWithCharacter(int characterId)
         {
@@ -61,7 +80,7 @@ namespace StarWars.Api.Controllers
         }
 
         [Microsoft.AspNetCore.Mvc.HttpPost("{characterId}/episodes")]
-        public async Task<ActionResult<ActionResult<Character>>> AssignNewEpisodesWithCharacter(int characterId, EpisodeCreation episodeForCharacter)
+        public async Task<ActionResult<ActionResult<CharacterResult>>> AssignNewEpisodesWithCharacter(int characterId, EpisodeCreation episodeForCharacter)
         {
             if (!ModelState.IsValid)
             {
@@ -113,22 +132,18 @@ namespace StarWars.Api.Controllers
             using (StarWarsContext db = new StarWarsContext())
             {
 
-                var newCharacter = new Character
+                if (await _characterRepository.CharacterNameExistsAsync(character.CharacterName))
                 {
-                    CharacterEpisodes =
-                        character.Episodes.Select(f => new CharacterEpisode() { EpisodeId = _episodeRepository.GetEpisodeByName(f).Id }).ToList(),
-                    Friends = new List<CharacterFriend>()
-                    {
-                        new CharacterFriend() {CharacterId = 1, CharacterFriendId = 2}
-                    },
-                    Name = character.CharacterName
-                };
-                db.Characters.Add(newCharacter);
+                    return BadRequest();
+                }
+
+                var entityToCreate = _mapper.Map<Character>(character);
+                _characterRepository.CreateCharacter(entityToCreate);
                 await db.SaveChangesAsync();
                 return CreatedAtAction(
               "GetCharacter",
-              new { characterId = newCharacter.Id },
-              newCharacter);
+              new { characterId = entityToCreate.Id },
+              entityToCreate);
             }
         }
     }

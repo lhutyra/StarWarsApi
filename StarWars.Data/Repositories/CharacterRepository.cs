@@ -27,6 +27,15 @@ namespace StarWars.Data.Repositories
             return await _context.Characters.AnyAsync(a => a.Id == characterId);
         }
 
+        public async Task<bool> CharacterNameExistsAsync(string characterName)
+        {
+            if (characterName is null)
+            {
+                throw new ArgumentNullException(nameof(characterName));
+            }
+            return await _context.Characters.AnyAsync(a => a.Name == characterName);
+        }
+
         public async Task<IEnumerable<Character>> GetCharacterAsync()
         {
             return await _context.Characters.Include(c => c.CharacterEpisodes).ThenInclude(z => z.Episode).Include(z => z.Friends).ThenInclude(z => z.Character).ToListAsync();
@@ -55,6 +64,11 @@ namespace StarWars.Data.Repositories
         public void UpdateCharacter(Character character)
         {
 
+        }
+
+        public void AddFriendToCharacter(Character character, Character friend)
+        {
+            _context.Add(new CharacterFriend() { });
         }
 
         public void CreateCharacter(Character character)
