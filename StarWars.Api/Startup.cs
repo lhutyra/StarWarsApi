@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -37,8 +38,10 @@ namespace StarWars
                     Title = "Star Wars Api"
                 });
             });
+            services.AddAutoMapper(typeof(Startup));
             services.AddDbContext<StarWarsContext>();
             services.AddScoped<IEpisodeRepository, EpisodeRepository>();
+            services.AddScoped<ICharacterRepository, CharacterRepository>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -63,7 +66,7 @@ namespace StarWars
             app.UseSwagger();
             app.UseSwaggerUI(setup =>
             {
-                setup.SwaggerEndpoint("/swagger/StarWarsApiDocumentation/swagger.json","endpoint");
+                setup.SwaggerEndpoint("/swagger/StarWarsApiDocumentation/swagger.json", "endpoint");
                 setup.RoutePrefix = string.Empty;
             });
         }

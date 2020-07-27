@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using StarWars.Domain.Repositories;
 
 
@@ -17,10 +18,12 @@ namespace StarWars.Api.Controllers
     public class EpisodesController : ControllerBase
     {
         private readonly IEpisodeRepository _episodeRepository;
+        private readonly IMapper _mapper;
 
-        public EpisodesController(IEpisodeRepository episodeRepository)
+        public EpisodesController(IEpisodeRepository episodeRepository, IMapper mapper)
         {
             _episodeRepository = episodeRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -40,16 +43,19 @@ namespace StarWars.Api.Controllers
         [HttpPost()]
         public async Task<ActionResult<Episode>> CreateEpisode([FromBody] EpisodeCreation episode)
         {
-            using (StarWarsContext db = new StarWarsContext())
+            try
             {
-                Episode newEntity = new Episode();
-                newEntity.EpisodeName = episode.Title;
-                db.Episodes.Add(newEntity);
-                await db.SaveChangesAsync();
+                var entityEpisode = _mapper.Map<Episode>(episode);
+                _episodeRepository.CreateEpisode(entityEpisode);
+                await _episodeRepository.SaveChangesAsync();
                 return CreatedAtRoute(
                     "GetEpisode",
-                    new {episodeId = newEntity.Id},
-                    episode);
+                    new { episodeId = 1 },
+                    entityEpisode);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
     }

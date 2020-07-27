@@ -14,6 +14,7 @@ namespace StarWars.Domain.Repositories
         Task<Episode> GetEpisodeAsync(int episodeId);
 
         void UpdateEpisode(Episode episode);
+        void CreateEpisode(Episode episode);
 
         Task<bool> SaveChangesAsync();
     }

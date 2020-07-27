@@ -7,6 +7,6 @@ namespace StarWars.Api.Model
 {
     public class EpisodeCreation
     {
-        public string Title { get; set; }
+        public string EpisodeName { get; set; }
     }
 }

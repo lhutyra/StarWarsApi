@@ -38,6 +38,11 @@ namespace StarWars.Data.Repositories
             
         }
 
+        public void CreateEpisode(Episode episode)
+        {
+            _context.Episodes.Add(episode);
+        }
+
         public async Task<bool> SaveChangesAsync()
         {
             return (await _context.SaveChangesAsync() > 0);

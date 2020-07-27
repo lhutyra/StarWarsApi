@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using StarWars.Domain.Repositories;
 
 namespace StarWars.Api.Controllers
 {
@@ -13,7 +14,11 @@ namespace StarWars.Api.Controllers
     [Route("[controller]")]
     public class CharactersController : ControllerBase
     {
-
+        private readonly ICharacterRepository _characterRepository;
+        public CharactersController(ICharacterRepository repository)
+        {
+            _characterRepository = repository;
+        }
         [HttpPost()]
         public async Task<ActionResult<Character>> CreateCharacter(CharacterCreation character)
         {
