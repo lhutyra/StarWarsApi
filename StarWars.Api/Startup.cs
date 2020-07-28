@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Builder;
@@ -39,8 +41,12 @@ namespace StarWars
             {
                 setup.SwaggerDoc("StarWarsApiDocumentation", new OpenApiInfo()
                 {
-                    Title = "Star Wars Api"
+                    Title = "Star Wars Api",
+                    Version="1"
                 });
+                var xmlCommentFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlCommentFullPath = Path.Combine(AppContext.BaseDirectory, xmlCommentFile);
+                setup.IncludeXmlComments(xmlCommentFullPath);
             });
             services.AddAutoMapper(typeof(Startup));
             services.AddDbContext<StarWarsContext>();

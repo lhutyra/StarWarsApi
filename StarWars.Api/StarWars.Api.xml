@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>StarWars.Api</name>
+    </assembly>
+    <members>
+        <member name="M:StarWars.Api.Controllers.CharactersController.Get">
+            <summary>
+            List all characters
+            </summary>
+            <returns>List of all characters</returns>
+        </member>
+        <member name="M:StarWars.Api.Controllers.CharactersController.GetCharacter(System.Int32)">
+            <summary>
+            Get character by Id
+            </summary>
+            <param name="characterId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:StarWars.Api.Controllers.CharactersController.GetFriendsOfCharacter(System.Int32)">
+            <summary>
+            List friends of character
+            </summary>
+            <param name="characterId">characterId</param>
+            <returns>List of friends</returns>
+        </member>
+        <member name="M:StarWars.Api.Controllers.CharactersController.DeleteFriendFromList(System.Int32,System.Int32)">
+            <summary>
+            Remove character from character friend list
+            </summary>
+            <param name="characterId">Selected character id</param>
+            <param name="friendId">Character Id to remove</param>
+            <returns>ActionResult</returns>
+        </member>
+        <member name="M:StarWars.Api.Controllers.CharactersController.AddFriendToCharacter(System.Int32,System.Int32)">
+            <summary>
+            Assign friend id to selected characterId
+            </summary>
+            <param name="characterId"></param>
+            <returns>route to action</returns>
+        </member>
+        <member name="M:StarWars.Api.Controllers.CharactersController.GetEpisodesWithCharacter(System.Int32)">
+            <summary>
+            List episodes for selected character
+            </summary>
+            <param name="characterId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:StarWars.Api.Controllers.CharactersController.AssignNewEpisodesWithCharacter(System.Int32,StarWars.Common.Model.EpisodeDto)">
+            <summary>
+            Create new episode and assign it to selected character
+            </summary>
+            <param name="characterId">Selected character</param>
+            <param name="episodeForCharacter">Episode name to create</param>
+            <returns>Action result</returns>
+        </member>
+        <member name="M:StarWars.Api.Controllers.CharactersController.AssignExistedEpisodeWithCharacter(System.Int32,System.Int32)">
+            <summary>
+            Assign existing episode to character
+            </summary>
+            <param name="characterId">Selected character</param>
+            <param name="episodeId">Episode Id to assign to character</param>
+            <returns>ActionResult</returns>
+        </member>
+        <member name="M:StarWars.Api.Controllers.CharactersController.CreateCharacter(StarWars.Api.Model.CharacterCreation)">
+            <summary>
+            Create new character
+            </summary>
+            <param name="character">Character data(name)</param>
+            <returns>ActionResult</returns>
+        </member>
+        <member name="M:StarWars.Api.Controllers.EpisodesController.Get">
+            <summary>
+            List of all episodes
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:StarWars.Api.Controllers.EpisodesController.Delete(System.Int32)">
+            <summary>
+            Delete episode with selected id
+            </summary>
+            <param name="episodeId">Episode id to delete</param>
+            <returns>ActionResult</returns>
+        </member>
+        <member name="M:StarWars.Api.Controllers.EpisodesController.Update(System.Int32,StarWars.Common.Model.EpisodeDto)">
+            <summary>
+            Update episode
+            </summary>
+            <param name="episodeId">Episode id to update</param>
+            <param name="episodeDto">new episode data</param>
+            <returns></returns>
+        </member>
+        <member name="M:StarWars.Api.Controllers.EpisodesController.GetEpisode(System.Int32)">
+            <summary>
+            Get episode by Id
+            </summary>
+            <param name="episodeId">selected episode id</param>
+            <returns>Episode</returns>
+        </member>
+        <member name="M:StarWars.Api.Controllers.EpisodesController.CreateEpisode(StarWars.Common.Model.EpisodeDto)">
+            <summary>
+            Create new episode
+            </summary>
+            <param name="episode">Episode name</param>
+            <returns>ActionResult</returns>
+        </member>
+    </members>
+</doc>

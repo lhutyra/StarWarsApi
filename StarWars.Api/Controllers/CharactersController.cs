@@ -7,12 +7,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using StarWars.Common.Model;
 using StarWars.Domain.Repositories;
 
 namespace StarWars.Api.Controllers
 {
     [ApiController]
+    [Produces("application/json", "application/xml")]
     [Microsoft.AspNetCore.Mvc.Route("[controller]")]
     public class CharactersController : ControllerBase
     {
@@ -28,24 +30,37 @@ namespace StarWars.Api.Controllers
             _characterService = characterService;
         }
 
-
+        /// <summary>
+        /// List all characters
+        /// </summary>
+        /// <returns>List of all characters</returns>
         [Microsoft.AspNetCore.Mvc.HttpGet]
         public async Task<IEnumerable<CharacterResult>> Get()
         {
             return await _characterService.GetCharactersMappedAsync();
         }
 
+        /// <summary>
+        /// Get character by Id
+        /// </summary>
+        /// <param name="characterId"></param>
+        /// <returns></returns>
         [Microsoft.AspNetCore.Mvc.HttpGet("{characterId}")]
         public async Task<ActionResult<CharacterResult>> GetCharacter(
 
             int characterId)
         {
 
-            var result = await _characterRepository.GetCharacterAsync(characterId);
-            var mappedResult = _mapper.Map<CharacterResult>(result);
-            return Ok(mappedResult);
+            var result = await _characterService.GetCharactersMappedAsync(characterId);
+            return Ok(result);
         }
 
+        /// <summary>
+        /// List friends of character
+        /// </summary>
+        /// <param name="characterId">characterId</param>
+        /// <returns>List of friends</returns>
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Microsoft.AspNetCore.Mvc.HttpGet("{characterId}/friends")]
         public async Task<ActionResult<List<CharacterResult>>> GetFriendsOfCharacter(int characterId)
         {
@@ -53,7 +68,17 @@ namespace StarWars.Api.Controllers
             var mappedResult = _mapper.Map<List<CharacterResult>>(character.Friends);
             return Ok(mappedResult);
         }
+
+        /// <summary>
+        /// Remove character from character friend list
+        /// </summary>
+        /// <param name="characterId">Selected character id</param>
+        /// <param name="friendId">Character Id to remove</param>
+        /// <returns>ActionResult</returns>
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Microsoft.AspNetCore.Mvc.HttpDelete("{characterId}/friends/{friendId}")]
+
         public async Task<IActionResult> DeleteFriendFromList(int characterId, int friendId)
         {
             var character = await _characterRepository.GetCharacterAsync(characterId);
@@ -90,16 +115,17 @@ namespace StarWars.Api.Controllers
         /// </summary>
         /// <param name="characterId"></param>
         /// <returns>route to action</returns>
-        [Microsoft.AspNetCore.Mvc.HttpPost("{characterId}/friends/{friendId}")]
-
-        public async Task<ActionResult<List<CharacterResult>>> AddFriendToCharacter(int characterId)
+        [Microsoft.AspNetCore.Mvc.HttpPatch("{characterId}/friends/{friendId}")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<List<CharacterResult>>> AddFriendToCharacter(int characterId, int friendId)
         {
             var character = await _characterRepository.GetCharacterAsync(characterId);
             if (character == null)
             {
                 NotFound();
             }
-            var friend = await _characterRepository.GetCharacterAsync(characterId);
+            var friend = await _characterRepository.GetCharacterAsync(friendId);
             if (friend == null)
             {
                 return NotFound();
@@ -111,15 +137,35 @@ namespace StarWars.Api.Controllers
                 _mapper.Map<CharacterResult>(character));
         }
 
+        /// <summary>
+        /// List episodes for selected character
+        /// </summary>
+        /// <param name="characterId"></param>
+        /// <returns></returns>
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         [Microsoft.AspNetCore.Mvc.HttpGet("{characterId}/episodes")]
         public async Task<ActionResult<List<Episode>>> GetEpisodesWithCharacter(int characterId)
         {
             var character = await _characterRepository.GetCharacterAsync(characterId);
+            if (character == null)
+            {
+                return NotFound();
+            }
             var mappedResult = _mapper.Map<List<EpisodeResult>>(character.CharacterEpisodes.Select(f => f.Episode));
             return Ok(mappedResult);
         }
 
+        /// <summary>
+        /// Create new episode and assign it to selected character
+        /// </summary>
+        /// <param name="characterId">Selected character</param>
+        /// <param name="episodeForCharacter">Episode name to create</param>
+        /// <returns>Action result</returns>
         [Microsoft.AspNetCore.Mvc.HttpPost("{characterId}/episodes")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<ActionResult<CharacterResult>>> AssignNewEpisodesWithCharacter(int characterId, EpisodeDto episodeForCharacter)
         {
             if (!ModelState.IsValid)
@@ -139,7 +185,16 @@ namespace StarWars.Api.Controllers
                 new { characterId = characterId },
                 character);
         }
-        [Microsoft.AspNetCore.Mvc.HttpPost("{characterId}/{episodeId}")]
+        /// <summary>
+        /// Assign existing episode to character
+        /// </summary>
+        /// <param name="characterId">Selected character</param>
+        /// <param name="episodeId">Episode Id to assign to character</param>
+        /// <returns>ActionResult</returns>
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [Microsoft.AspNetCore.Mvc.HttpPatch("{characterId}/{episodeId}")]
         public async Task<ActionResult<ActionResult<Character>>> AssignExistedEpisodeWithCharacter(int characterId, int episodeId)
         {
             if (!ModelState.IsValid)
@@ -166,7 +221,14 @@ namespace StarWars.Api.Controllers
                 character);
         }
 
+        /// <summary>
+        /// Create new character
+        /// </summary>
+        /// <param name="character">Character data(name)</param>
+        /// <returns>ActionResult</returns>
         [Microsoft.AspNetCore.Mvc.HttpPost()]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
         public async Task<ActionResult<Character>> CreateCharacter(CharacterCreation character)
         {
 
@@ -182,6 +244,33 @@ namespace StarWars.Api.Controllers
           "GetCharacter",
           new { characterId = entityToCreate.Id },
            _mapper.Map<CharacterResult>(entityToCreate));
+        }
+
+
+        /// <summary>
+        /// Update character name
+        /// </summary>
+        /// <param name="episodeId">Character id to update</param>
+        /// <param name="characterDto">Character name</param>
+        /// <returns></returns>
+        [HttpPatch("{characterId}")]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        public async Task<IActionResult> Update(int charadcterId, [FromBody] CharacterCreation characterDto)
+        {
+            if (await _characterRepository.CharacterNameExistsAsync(characterDto.Name))
+            {
+                return BadRequest($"Character with {characterDto.Name} name exists already");
+            }
+            var character = _mapper.Map<Character>(characterDto);
+            character.Id = charadcterId;
+            _characterRepository.UpdateCharacter(character);
+            await _episodeRepository.SaveChangesAsync();
+            return CreatedAtAction(
+                "GetCharacter",
+                new { characterId = character.Id },
+                character);
+
         }
     }
 }

@@ -9,5 +9,6 @@ namespace StarWars.Domain
         void AddFriendToCharacter(Character character, Character friend);
         void AssignNewEpisodeToCharacter(Character character, Episode episode);
         Task<IEnumerable<CharacterResult>> GetCharactersMappedAsync();
+        Task<CharacterResult> GetCharactersMappedAsync(int characterId);
     }
 }

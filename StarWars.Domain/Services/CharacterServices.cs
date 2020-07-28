@@ -12,7 +12,7 @@ namespace StarWars.Domain.Services
     {
         private readonly ICharacterRepository _characterRepository;
         private readonly IEpisodeRepository _episodeRepository;
-        
+
         public CharacterService(ICharacterRepository characterRepository, IEpisodeRepository episodeRepository)
         {
             _characterRepository = characterRepository;
@@ -52,15 +52,29 @@ namespace StarWars.Domain.Services
             {
                 CharacterResult characterResult = new CharacterResult();
                 var friendOfCharacter = _characterRepository.GetFriendsOfCharacter(character.Id).Select(f => f.Name).ToList();
-                
+                characterResult.Id = character.Id;
                 characterResult.Name = character.Name;
                 characterResult.Friends = friendOfCharacter;
-                characterResult.Episodes= character.CharacterEpisodes.Select(f => f.Episode.EpisodeName).ToList();
+                characterResult.Episodes = character.CharacterEpisodes.Select(f => f.Episode.EpisodeName).ToList();
                 characterResultList.Add(characterResult);
 
             }
 
             return characterResultList;
+        }
+        public async Task<CharacterResult> GetCharactersMappedAsync(int characterId)
+        {
+            var character = await _characterRepository.GetCharacterAsync(characterId);
+            CharacterResult characterResult = new CharacterResult();
+
+
+            var friendOfCharacter = _characterRepository.GetFriendsOfCharacter(character.Id).Select(f => f.Name).ToList();
+            characterResult.Id = character.Id;
+            characterResult.Name = character.Name;
+            characterResult.Friends = friendOfCharacter;
+            characterResult.Episodes = character.CharacterEpisodes.Select(f => f.Episode.EpisodeName).ToList();
+
+            return characterResult;
         }
 
     }

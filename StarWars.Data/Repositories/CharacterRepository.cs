@@ -63,7 +63,7 @@ namespace StarWars.Data.Repositories
 
         public void UpdateCharacter(Character character)
         {
-
+            _context.Characters.Update(character);
         }
 
         public void AddFriendToCharacter(Character character, Character friend)
