@@ -20,20 +20,21 @@ namespace StarWars.Tests
         }
 
         [Fact]
-        public void AddingExistingFriendToCharacter_ShouldThrowException()
+        public async void AddingExistingFriendToCharacter_ShouldThrowException()
         {
-            var anyCharacter = It.IsAny<Character>();
+            var anyCharacter = new Character() {Name = "test"};
             _characterRepositoryMock.Setup(f => f.HasFriendAlready(anyCharacter, anyCharacter)).Returns(true);
-            Assert.Throws<InvalidOperationException>(() => _sut.AddFriendToCharacter(new Character(), new Character()));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _sut.AddFriendToCharacterAsync(anyCharacter, anyCharacter));
         }
 
         [Fact]
-        public void AddingSelfToCharacter_ShouldThrowException()
+        public async void AddingSelfToCharacter_ShouldThrowException()
         {
             var me = new Character() { Id = 1 };
             var self = new Character() { Id = 1 };
             _characterRepositoryMock.Setup(f => f.HasFriendAlready(me, self)).Returns(true);
-            Assert.Throws<InvalidOperationException>(() => _sut.AddFriendToCharacter(me, self));
+
+            await Assert.ThrowsAsync<InvalidOperationException>(() => _sut.AddFriendToCharacterAsync(me, self));
         }
 
     }

@@ -10,6 +10,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using StarWars.Common.Model;
 using StarWars.Domain.Repositories;
+using StarWars.Domain.Services;
 
 namespace StarWars.Api.Controllers
 {
@@ -46,11 +47,16 @@ namespace StarWars.Api.Controllers
         /// <param name="characterId"></param>
         /// <returns></returns>
         [Microsoft.AspNetCore.Mvc.HttpGet("{characterId}")]
-        public async Task<ActionResult<CharacterResult>> GetCharacter(
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetCharacter(
 
             int characterId)
         {
-
+            if (!await _characterRepository.CharacterExistsAsync(characterId))
+            {
+                return NotFound();
+            }
             var result = await _characterService.GetCharactersMappedAsync(characterId);
             return Ok(result);
         }
@@ -60,10 +66,15 @@ namespace StarWars.Api.Controllers
         /// </summary>
         /// <param name="characterId">characterId</param>
         /// <returns>List of friends</returns>
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Microsoft.AspNetCore.Mvc.HttpGet("{characterId}/friends")]
         public async Task<ActionResult<List<CharacterResult>>> GetFriendsOfCharacter(int characterId)
         {
+            if (!await _characterRepository.CharacterExistsAsync(characterId))
+            {
+                return NotFound();
+            }
             var character = await _characterRepository.GetCharacterAsync(characterId);
             var mappedResult = _mapper.Map<List<CharacterResult>>(character.Friends);
             return Ok(mappedResult);
@@ -92,9 +103,11 @@ namespace StarWars.Api.Controllers
                 return NotFound();
             }
 
-            if (!_characterRepository.HasFriendAlready(character, characterFriend))
+            if (_characterRepository.HasFriendAlready(character, characterFriend))
             {
-                throw new InvalidOperationException($"{character.Name} doesn't has friend {characterFriend.Name}");
+                ModelState.AddModelError(nameof(character),
+                    $"{character.Name} doesn't has friend {characterFriend.Name}");
+                return BadRequest(ModelState);
             }
             _characterRepository.RemoveFriendFromCharacter(character, characterFriend);
             try
@@ -134,7 +147,7 @@ namespace StarWars.Api.Controllers
 
             try
             {
-                _characterService.AddFriendToCharacter(character, friend);
+                await _characterService.AddFriendToCharacterAsync(character, friend);
             }
             catch (Exception ex)
             {
@@ -232,7 +245,7 @@ namespace StarWars.Api.Controllers
             await _episodeRepository.SaveChangesAsync();
             return CreatedAtAction(
                 "GetCharacter",
-                new {  characterId },
+                new { characterId },
                 character);
         }
 

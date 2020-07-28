@@ -18,11 +18,11 @@ namespace StarWars.Domain.Services
             _characterRepository = characterRepository;
             _episodeRepository = episodeRepository;
         }
-        public async void AddFriendToCharacter(Character character, Character friend)
+        public async Task AddFriendToCharacterAsync(Character character, Character friend)
         {
             if (_characterRepository.HasFriendAlready(character, friend))
             {
-                throw new InvalidOperationException($"{friend.Name} is already friend of {character.Name}");
+                throw new InvalidOperationException($"{friend?.Name} is already friend of {character.Name}");
             }
 
             if (character.Id == friend.Id)
