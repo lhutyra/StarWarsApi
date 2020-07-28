@@ -118,6 +118,7 @@ namespace StarWars.Api.Controllers
         [Microsoft.AspNetCore.Mvc.HttpPatch("{characterId}/friends/{friendId}")]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<ActionResult<List<CharacterResult>>> AddFriendToCharacter(int characterId, int friendId)
         {
             var character = await _characterRepository.GetCharacterAsync(characterId);
@@ -130,7 +131,16 @@ namespace StarWars.Api.Controllers
             {
                 return NotFound();
             }
-            _characterService.AddFriendToCharacter(character, friend);
+
+            try
+            {
+                _characterService.AddFriendToCharacter(character, friend);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+
             return CreatedAtAction(
                 "GetCharacter",
                 new { characterId },
@@ -213,11 +223,16 @@ namespace StarWars.Api.Controllers
             {
                 return NotFound();
             }
+
+            if (await _characterRepository.HasEpisodeAssignedAsync(characterId, episodeId))
+            {
+                return BadRequest("Episode already assigned to character");
+            }
             _episodeRepository.CreateEpisodeAndAssignCharacter(character, episode);
             await _episodeRepository.SaveChangesAsync();
             return CreatedAtAction(
                 "GetCharacter",
-                new { characterId = characterId },
+                new {  characterId },
                 character);
         }
 
@@ -250,20 +265,20 @@ namespace StarWars.Api.Controllers
         /// <summary>
         /// Update character name
         /// </summary>
-        /// <param name="episodeId">Character id to update</param>
+        /// <param name="characterId">Character id to update</param>
         /// <param name="characterDto">Character name</param>
         /// <returns></returns>
         [HttpPatch("{characterId}")]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status201Created)]
-        public async Task<IActionResult> Update(int charadcterId, [FromBody] CharacterCreation characterDto)
+        public async Task<IActionResult> Update(int characterId, [FromBody] CharacterCreation characterDto)
         {
             if (await _characterRepository.CharacterNameExistsAsync(characterDto.Name))
             {
                 return BadRequest($"Character with {characterDto.Name} name exists already");
             }
             var character = _mapper.Map<Character>(characterDto);
-            character.Id = charadcterId;
+            character.Id = characterId;
             _characterRepository.UpdateCharacter(character);
             await _episodeRepository.SaveChangesAsync();
             return CreatedAtAction(

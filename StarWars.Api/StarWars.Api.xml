@@ -69,6 +69,14 @@
             <param name="character">Character data(name)</param>
             <returns>ActionResult</returns>
         </member>
+        <member name="M:StarWars.Api.Controllers.CharactersController.Update(System.Int32,StarWars.Api.Model.CharacterCreation)">
+            <summary>
+            Update character name
+            </summary>
+            <param name="characterId">Character id to update</param>
+            <param name="characterDto">Character name</param>
+            <returns></returns>
+        </member>
         <member name="M:StarWars.Api.Controllers.EpisodesController.Get">
             <summary>
             List of all episodes

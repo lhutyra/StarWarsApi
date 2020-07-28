@@ -13,7 +13,7 @@ namespace StarWars.Tests
     public class EpisodeRepositoryTests
     {
         [Fact]
-        public async void CanInsertEpisode()
+        public async void InsertingEpisode_DataPassed_EpisodeInserted()
         {
             var builder = new DbContextOptionsBuilder();
             builder.UseInMemoryDatabase("InsertNewEpisode");

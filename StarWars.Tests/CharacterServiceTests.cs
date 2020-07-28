@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
 using Moq;
 using StarWars.Domain;
 using StarWars.Domain.Repositories;
@@ -23,11 +20,20 @@ namespace StarWars.Tests
         }
 
         [Fact]
-        public void AddingFriendToCharacter_ShouldThrowException()
+        public void AddingExistingFriendToCharacter_ShouldThrowException()
         {
             var anyCharacter = It.IsAny<Character>();
             _characterRepositoryMock.Setup(f => f.HasFriendAlready(anyCharacter, anyCharacter)).Returns(true);
             Assert.Throws<InvalidOperationException>(() => _sut.AddFriendToCharacter(new Character(), new Character()));
+        }
+
+        [Fact]
+        public void AddingSelfToCharacter_ShouldThrowException()
+        {
+            var me = new Character() { Id = 1 };
+            var self = new Character() { Id = 1 };
+            _characterRepositoryMock.Setup(f => f.HasFriendAlready(me, self)).Returns(true);
+            Assert.Throws<InvalidOperationException>(() => _sut.AddFriendToCharacter(me, self));
         }
 
     }

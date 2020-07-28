@@ -16,7 +16,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\StarWars.Api\StarWars.Api.csproj" />
     <ProjectReference Include="..\StarWars.Data\StarWars.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="NewFolder\" />
   </ItemGroup>
 
 </Project>

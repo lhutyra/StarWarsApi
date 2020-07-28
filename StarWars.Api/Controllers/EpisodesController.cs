@@ -91,11 +91,15 @@ namespace StarWars.Api.Controllers
         /// <returns>Episode</returns>
 
         [HttpGet("{episodeId}")]
-        public async Task<ActionResult<Episode>> GetEpisode(
+        public async Task<IActionResult> GetEpisode(
 
             int episodeId)
         {
-            return await _episodeRepository.GetEpisodeAsync(episodeId);
+            if (!await _episodeRepository.EpisodeExistsAsync(episodeId))
+            {
+                return NotFound();
+            }
+            return Ok(await _episodeRepository.GetEpisodeAsync(episodeId));
         }
 
 

@@ -9,6 +9,7 @@ namespace StarWars.Domain.Repositories
     public interface ICharacterRepository
     {
         Task<bool> CharacterExistsAsync(int characterId);
+        Task<bool> HasEpisodeAssignedAsync(int characterId,int episodeId);
         Task<bool> CharacterNameExistsAsync(string characterName);
         Task<IEnumerable<Character>> GetCharacterAsync();
         Task<Character> GetCharacterAsync(int characterId);

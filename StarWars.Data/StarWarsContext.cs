@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using StarWars.Domain;
-using System;
 
 namespace StarWars.Data
 {
@@ -31,12 +30,6 @@ namespace StarWars.Data
         {
             modelBuilder.Entity<CharacterEpisode>().HasKey(k => new { k.CharacterId, k.EpisodeId });
             modelBuilder.Entity<CharacterFriend>().HasKey(k => new { k.CharacterId, k.CharacterFriendId });
-            //modelBuilder.Entity<CharacterWithFriend>().HasKey(k => new { k.CharacterId, k.CharacterFriendId });
-            //modelBuilder.Entity<CharacterWithFriend>().HasOne(c => c.Character).WithOne().OnDelete(DeleteBehavior.ClientNoAction);
-            //modelBuilder.Entity<CharacterWithFriend>().HasOne(c => c.CharacterFriend).WithOne().OnDelete(DeleteBehavior.ClientNoAction);
-            
-
-
         }
     }
 }

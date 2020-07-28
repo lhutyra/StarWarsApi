@@ -25,6 +25,11 @@ namespace StarWars.Domain.Services
                 throw new InvalidOperationException($"{friend.Name} is already friend of {character.Name}");
             }
 
+            if (character.Id == friend.Id)
+            {
+                throw new InvalidOperationException($"Cannot add friend of myself");
+            }
+
             _characterRepository.AddFriendToCharacter(character, friend);
             await _characterRepository.SaveChangesAsync();
         }

@@ -27,6 +27,11 @@ namespace StarWars.Data.Repositories
             return await _context.Characters.AnyAsync(a => a.Id == characterId);
         }
 
+        public async Task<bool> HasEpisodeAssignedAsync(int characterId, int episodeId)
+        {
+            return await _context.CharacterEpisode.AnyAsync(f => f.CharacterId == characterId && f.EpisodeId == episodeId);
+        }
+
         public async Task<bool> CharacterNameExistsAsync(string characterName)
         {
             if (characterName is null)
