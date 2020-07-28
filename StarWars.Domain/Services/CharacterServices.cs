@@ -34,13 +34,14 @@ namespace StarWars.Domain.Services
             await _characterRepository.SaveChangesAsync();
         }
 
-        public async void AssignNewEpisodeToCharacter(Character character, Episode episode)
+        public async Task AssignNewEpisodeToCharacter(Character character, Episode episode)
         {
             if (await _episodeRepository.EpisodeNameExistsAsync(episode.EpisodeName))
             {
                 throw new InvalidOperationException($"{episode.EpisodeName} already exists");
             }
             _episodeRepository.CreateEpisodeAndAssignCharacter(character, episode);
+            await _characterRepository.SaveChangesAsync();
         }
 
         public IEnumerable<Character> GetFriendsOfCharacter(int characterId)
@@ -82,5 +83,6 @@ namespace StarWars.Domain.Services
             return characterResult;
         }
 
+        
     }
 }

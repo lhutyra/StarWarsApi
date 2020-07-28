@@ -69,15 +69,15 @@ namespace StarWars.Api.Controllers
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [Microsoft.AspNetCore.Mvc.HttpGet("{characterId}/friends")]
-        public async Task<ActionResult<List<CharacterResult>>> GetFriendsOfCharacter(int characterId)
+        public async Task<ActionResult<List<FriendResult>>> GetFriendsOfCharacter(int characterId)
         {
             if (!await _characterRepository.CharacterExistsAsync(characterId))
             {
                 return NotFound();
             }
-            var character = await _characterRepository.GetCharacterAsync(characterId);
-            var mappedResult = _mapper.Map<List<CharacterResult>>(character.Friends);
-            return Ok(mappedResult);
+            var characterFriends = _characterService.GetFriendsOfCharacter(characterId);
+            var result = _mapper.Map<List<FriendResult>>(characterFriends);
+            return Ok(result);
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace StarWars.Api.Controllers
                 return NotFound();
             }
 
-            if (_characterRepository.HasFriendAlready(character, characterFriend))
+            if (!_characterRepository.HasFriendAlready(character, characterFriend))
             {
                 ModelState.AddModelError(nameof(character),
                     $"{character.Name} doesn't has friend {characterFriend.Name}");
@@ -201,8 +201,7 @@ namespace StarWars.Api.Controllers
             {
                 return NotFound();
             }
-            _characterService.AssignNewEpisodeToCharacter(character, _mapper.Map<Episode>(episodeForCharacter));
-            await _episodeRepository.SaveChangesAsync();
+            await _characterService.AssignNewEpisodeToCharacter(character, _mapper.Map<Episode>(episodeForCharacter));
             return CreatedAtAction(
                 "GetCharacter",
                 new { characterId = characterId },

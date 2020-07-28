@@ -7,8 +7,9 @@ namespace StarWars.Domain.Services
     public interface ICharacterService
     {
         Task AddFriendToCharacterAsync(Character character, Character friend);
-        void AssignNewEpisodeToCharacter(Character character, Episode episode);
+        Task AssignNewEpisodeToCharacter(Character character, Episode episode);
         Task<IEnumerable<CharacterResult>> GetCharactersMappedAsync();
         Task<CharacterResult> GetCharactersMappedAsync(int characterId);
+        IEnumerable<Character> GetFriendsOfCharacter(int characterId);
     }
 }

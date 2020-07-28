@@ -89,7 +89,7 @@ namespace StarWars.Tests.Functional
             _characterRepositoryMock.Setup(f => f.GetCharacterAsync(friendId)).Returns(Task.FromResult(friend));
             _characterRepositoryMock
                 .Setup(f => f.HasFriendAlready(character, friend))
-                .Returns(true);
+                .Returns(false);
             var result = await _sut.DeleteFriendFromList(characterId, friendId);
             Assert.IsType<BadRequestObjectResult>(result);
         }
@@ -105,9 +105,9 @@ namespace StarWars.Tests.Functional
             _characterRepositoryMock.Setup(f => f.GetCharacterAsync(friendId)).Returns(Task.FromResult(friend));
             _characterRepositoryMock
                 .Setup(f => f.HasFriendAlready(character, friend))
-                .Returns(false);
+                .Returns(true);
             var result = await _sut.DeleteFriendFromList(characterId, friendId);
-            _characterRepositoryMock.Verify(f => f.RemoveFriendFromCharacter(It.IsAny<Character>(), It.IsAny<Character>()));
+            _characterRepositoryMock.Verify(f => f.RemoveFriendFromCharacter(character, friend));
             Assert.IsType<NoContentResult>(result);
         }
 
