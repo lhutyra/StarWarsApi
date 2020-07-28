@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using StarWars.Common.Model;
 using StarWars.Domain.Repositories;
 
 namespace StarWars.Api.Controllers
@@ -16,21 +17,21 @@ namespace StarWars.Api.Controllers
     {
         private readonly ICharacterRepository _characterRepository;
         private readonly IEpisodeRepository _episodeRepository;
+        private readonly ICharacterService _characterService;
         private readonly IMapper _mapper;
-        public CharactersController(ICharacterRepository repository, IEpisodeRepository episodeRepository, IMapper mapper)
+        public CharactersController(ICharacterRepository repository, IEpisodeRepository episodeRepository, IMapper mapper, ICharacterService characterService)
         {
             _characterRepository = repository;
             _episodeRepository = episodeRepository;
             _mapper = mapper;
+            _characterService = characterService;
         }
 
 
         [Microsoft.AspNetCore.Mvc.HttpGet]
         public async Task<IEnumerable<CharacterResult>> Get()
         {
-            var dbResult = await _characterRepository.GetCharacterAsync();
-            var mappedResult = _mapper.Map<List<CharacterResult>>(dbResult);
-            return mappedResult;
+            return await _characterService.GetCharactersMappedAsync();
         }
 
         [Microsoft.AspNetCore.Mvc.HttpGet("{characterId}")]
@@ -71,11 +72,10 @@ namespace StarWars.Api.Controllers
             {
                 return NotFound();
             }
-            _characterRepository.AddFriendToCharacter(character, friend);
-            await _characterRepository.SaveChangesAsync();
+            _characterService.AddFriendToCharacter(character, friend);
             return CreatedAtAction(
                 "GetCharacter",
-                new { characterId = characterId },
+                new { characterId },
                 _mapper.Map<CharacterResult>(character));
         }
 
@@ -100,7 +100,7 @@ namespace StarWars.Api.Controllers
             {
                 return NotFound();
             }
-            _episodeRepository.CreateEpisodeAndAssignCharacter(character, _mapper.Map<Episode>(episodeForCharacter));
+            _characterService.AssignNewEpisodeToCharacter(character, _mapper.Map<Episode>(episodeForCharacter));
             await _episodeRepository.SaveChangesAsync();
             return CreatedAtAction(
                 "GetCharacter",

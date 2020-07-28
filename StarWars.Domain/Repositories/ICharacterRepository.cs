@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,6 +16,8 @@ namespace StarWars.Domain.Repositories
         void CreateCharacter(Character character);
         void UpdateCharacter(Character character);
         void AddFriendToCharacter(Character character,Character friend);
+        bool HasFriendAlready(Character character, Character friend);
         Task<bool> SaveChangesAsync();
+        IQueryable<Character> GetFriendsOfCharacter(int characterId);
     }
 }

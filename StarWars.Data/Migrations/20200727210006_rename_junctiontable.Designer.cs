@@ -2,15 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StarWars.Data;
 
 namespace StarWars.Data.Migrations
 {
     [DbContext(typeof(StarWarsContext))]
-    partial class StarWarsContextModelSnapshot : ModelSnapshot
+    [Migration("20200727210006_rename_junctiontable")]
+    partial class rename_junctiontable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,21 +63,6 @@ namespace StarWars.Data.Migrations
                     b.ToTable("CharacterFriend");
                 });
 
-            modelBuilder.Entity("StarWars.Domain.CharacterWithFriend", b =>
-                {
-                    b.Property<int>("CharacterId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CharacterFriendId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CharacterId", "CharacterFriendId");
-
-                    b.HasIndex("CharacterFriendId");
-
-                    b.ToTable("CharacterWithFriend");
-                });
-
             modelBuilder.Entity("StarWars.Domain.Episode", b =>
                 {
                     b.Property<int>("Id")
@@ -110,21 +97,6 @@ namespace StarWars.Data.Migrations
                 {
                     b.HasOne("StarWars.Domain.Character", "Character")
                         .WithMany("Friends")
-                        .HasForeignKey("CharacterId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("StarWars.Domain.CharacterWithFriend", b =>
-                {
-                    b.HasOne("StarWars.Domain.Character", "CharacterFriend")
-                        .WithMany()
-                        .HasForeignKey("CharacterFriendId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("StarWars.Domain.Character", "Character")
-                        .WithMany()
                         .HasForeignKey("CharacterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

@@ -16,7 +16,9 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json;
 using StarWars.Data;
 using StarWars.Data.Repositories;
+using StarWars.Domain;
 using StarWars.Domain.Repositories;
+using StarWars.Domain.Services;
 
 namespace StarWars
 {
@@ -44,6 +46,7 @@ namespace StarWars
             services.AddDbContext<StarWarsContext>();
             services.AddScoped<IEpisodeRepository, EpisodeRepository>();
             services.AddScoped<ICharacterRepository, CharacterRepository>();
+            services.AddScoped<ICharacterService, CharacterService>();
             services.AddDbContext<StarWarsContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("StarWarsDatabase")));
             services.AddMvc()

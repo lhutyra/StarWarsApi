@@ -59,6 +59,10 @@ namespace StarWars.Data.Repositories
         {
             _context.Episodes.Add(episode);
         }
+        public void CreateNewEpisodeForCharacter(Character character, Episode episode)
+        {
+            _context.Episodes.Add(episode);
+        }
 
         public void CreateEpisodeAndAssignCharacter(Character character, Episode episode)
         {

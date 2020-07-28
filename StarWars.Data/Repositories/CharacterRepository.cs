@@ -71,6 +71,17 @@ namespace StarWars.Data.Repositories
             _context.Add(new CharacterFriend() { CharacterId = character.Id, CharacterFriendId = friend.Id });
         }
 
+        public bool HasFriendAlready(Character character, Character friend)
+        {
+            return _context.CharacterFriend.Any(f => f.CharacterId == character.Id && f.CharacterFriendId == friend.Id);
+        }
+        public IQueryable<Character> GetFriendsOfCharacter(int characterId)
+        {
+            var characterFriends = _context.CharacterFriend.Where(f => f.CharacterId == characterId).Select(f => f.CharacterFriendId);
+            return _context.Characters.Where(c => characterFriends.Contains(c.Id));
+
+        }
+
         public void CreateCharacter(Character character)
         {
             _context.Characters.Add(character);

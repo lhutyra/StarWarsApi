@@ -23,5 +23,6 @@ namespace StarWars.Domain.Repositories
         Episode GetEpisodeByName(string episodeName);
         Task<bool> EpisodeNameExistsAsync(string episodeName);
         void CreateEpisodeAndAssignCharacter(Character character, Episode episode);
+        void CreateNewEpisodeForCharacter(Character character, Episode episode);
     }
 }
