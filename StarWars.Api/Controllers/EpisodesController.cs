@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using StarWars.Common.Model;
 using StarWars.Domain.Repositories;
 
 
@@ -32,12 +33,30 @@ namespace StarWars.Api.Controllers
             return await _episodeRepository.GetEpisodeAsync();
         }
 
-        [HttpDelete]
+        [HttpDelete("{episodeId}")]
         public async Task<IActionResult> Delete(int episodeId)
         {
             _episodeRepository.DeleteEpisode(episodeId);
             await _episodeRepository.SaveChangesAsync();
             return NoContent();
+
+        }
+
+        [HttpPatch("{episodeId}")]
+        public async Task<IActionResult> Update(int episodeId, [FromBody] EpisodeDto episodeDto)
+        {
+            if (await _episodeRepository.EpisodeNameExistsAsync(episodeDto.EpisodeName))
+            {
+                return BadRequest($"Episode with {episodeDto.EpisodeName} name exists already");
+            }
+            var episode = _mapper.Map<Episode>(episodeDto);
+            episode.Id = episodeId;
+            _episodeRepository.UpdateEpisode(episode);
+            await _episodeRepository.SaveChangesAsync();
+            return CreatedAtAction(
+                "GetEpisode",
+                new { episodeId = episodeId },
+                episode);
 
         }
 
@@ -50,7 +69,7 @@ namespace StarWars.Api.Controllers
         }
 
         [HttpPost()]
-        public async Task<ActionResult<Episode>> CreateEpisode([FromBody] EpisodeCreation episode)
+        public async Task<ActionResult<Episode>> CreateEpisode([FromBody] EpisodeDto episode)
         {
             try
             {
@@ -61,7 +80,7 @@ namespace StarWars.Api.Controllers
                 var entityEpisode = _mapper.Map<Episode>(episode);
                 if (await _episodeRepository.EpisodeNameExistsAsync(episode.EpisodeName))
                 {
-                    return BadRequest("Episode name exists already");
+                    return BadRequest($"Episode name: {episode.EpisodeName} already exists");
                 }
                 _episodeRepository.CreateEpisode(entityEpisode);
                 await _episodeRepository.SaveChangesAsync();

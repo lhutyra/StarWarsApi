@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace StarWars.Api.Model
+namespace StarWars.Common.Model
 {
-    public class EpisodeCreation
+    public class EpisodeDto
     {
         [Required]
         [MinLength(3)]

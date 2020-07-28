@@ -52,7 +52,7 @@ namespace StarWars.Data.Repositories
 
         public void UpdateEpisode(Episode episode)
         {
-
+            _context.Episodes.Update(episode);
         }
 
         public void CreateEpisode(Episode episode)

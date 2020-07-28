@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System;
+using Microsoft.AspNetCore.Mvc;
 using StarWars.Api.Model;
 using StarWars.Data;
 using StarWars.Domain;
@@ -52,6 +53,37 @@ namespace StarWars.Api.Controllers
             var mappedResult = _mapper.Map<List<CharacterResult>>(character.Friends);
             return Ok(mappedResult);
         }
+        [Microsoft.AspNetCore.Mvc.HttpDelete("{characterId}/friends/{friendId}")]
+        public async Task<IActionResult> DeleteFriendFromList(int characterId, int friendId)
+        {
+            var character = await _characterRepository.GetCharacterAsync(characterId);
+            var characterFriend = await _characterRepository.GetCharacterAsync(friendId);
+            if (character == null)
+            {
+                return NotFound();
+            }
+            if (characterFriend == null)
+            {
+                return NotFound();
+            }
+
+            if (!_characterRepository.HasFriendAlready(character, characterFriend))
+            {
+                throw new InvalidOperationException($"{character.Name} doesn't has friend {characterFriend.Name}");
+            }
+            _characterRepository.RemoveFriendFromCharacter(character, characterFriend);
+            try
+            {
+                await _characterRepository.SaveChangesAsync();
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+
+
+        }
 
         /// <summary>
         /// Assign friend id to selected characterId
@@ -88,7 +120,7 @@ namespace StarWars.Api.Controllers
         }
 
         [Microsoft.AspNetCore.Mvc.HttpPost("{characterId}/episodes")]
-        public async Task<ActionResult<ActionResult<CharacterResult>>> AssignNewEpisodesWithCharacter(int characterId, EpisodeCreation episodeForCharacter)
+        public async Task<ActionResult<ActionResult<CharacterResult>>> AssignNewEpisodesWithCharacter(int characterId, EpisodeDto episodeForCharacter)
         {
             if (!ModelState.IsValid)
             {

@@ -19,5 +19,6 @@ namespace StarWars.Domain.Repositories
         bool HasFriendAlready(Character character, Character friend);
         Task<bool> SaveChangesAsync();
         IQueryable<Character> GetFriendsOfCharacter(int characterId);
+        void RemoveFriendFromCharacter(Character character, Character friend);
     }
 }

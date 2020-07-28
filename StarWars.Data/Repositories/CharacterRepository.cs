@@ -70,6 +70,10 @@ namespace StarWars.Data.Repositories
         {
             _context.Add(new CharacterFriend() { CharacterId = character.Id, CharacterFriendId = friend.Id });
         }
+        public void RemoveFriendFromCharacter(Character character, Character friend)
+        {
+            _context.CharacterFriend.RemoveRange(_context.CharacterFriend.Where(f => f.CharacterFriendId == friend.Id && f.CharacterId == character.Id));
+        }
 
         public bool HasFriendAlready(Character character, Character friend)
         {
